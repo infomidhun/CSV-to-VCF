@@ -1,0 +1,249 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace CSV_To_VCF
+{
+    public partial class CMainDlg : Form
+    {
+
+        void _ImportData(string filenames)
+        {
+            string[] _files = filenames.Split('|');
+            mLblImportData.Visible = false;
+
+            foreach (string file in _files)
+            {
+                //
+                // Return empty path
+                //
+                if (file == "")
+                    continue;
+
+                if (!File.Exists(file))
+                {
+                    MessageBox.Show(string.Format("File doesn't exists ({0}).", file));
+                    continue;
+                }
+
+                try
+                {
+                    string[] data = File.ReadAllLines(file);
+                    foreach(string col in data)
+                    {
+                        //
+                        // Match and replace commas outside of quotes nad replace double quotes.
+                        //
+                        string _repl = Regex.Replace(col, 
+                            ",(?!(?:[^\"]*\"[^\"]*\")*[^\"]*$)", "").Replace("\"", "");
+
+                        string[] rows = _repl.Split(',');
+                        ListViewItem lvItem = null;
+
+                        for (int i = 1; i < rows.Length; i++)
+                        {
+                            if (i == 1)
+                                lvItem = new ListViewItem(rows[0].ToString());
+                            //
+                            // Adding Column header
+                            //
+
+                            if (mLvImportData.Columns.Count < rows.Length)
+                                mLvImportData.Columns.Add("");
+
+                            //
+                            // Adding row data
+                            //
+                            lvItem.SubItems.Add(rows[i]);
+                        }
+                        mLvImportData.Items.Add(lvItem);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "File error", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                for (int i = 0; i < mLvImportData.Columns.Count; i++)
+                    mLvImportData.Columns[i].Width = (i == 0 ? 30 : (i == 1 ? 123 : 200));
+            }
+
+            mNumRow.Maximum = mLvImportData.Columns.Count;
+        }
+
+        public CMainDlg()
+        {
+            InitializeComponent();
+
+            Activate();
+            Update();
+        }
+
+        void mBtnImport_Click(object sender, EventArgs e)
+        {
+            //
+            // Aware there are already data
+            //
+            if (mLvImportData.Items.Count != 0)
+            {
+                if (MessageBox.Show("Are you sure want to import new data before current data export?",
+                    "Confirmation",
+                    MessageBoxButtons.YesNo) == DialogResult.No)
+                    return;
+            }
+
+
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            {
+                //
+                // Set default path for openfile dialog.
+                //
+                string[] filename = mTxtImport.Text.Split('|');
+                if (File.Exists(filename[0]))
+                    dlg.FileName = filename[0];
+
+                dlg.Multiselect = true;
+                dlg.Filter = "Comma Seperated File(*.csv)|*.csv";
+                if (dlg.ShowDialog() != DialogResult.OK)
+                    return;
+                //
+                // Formatting multiple selection by | seperator.
+                //
+                string filenames = "";
+                foreach (string str in dlg.FileNames)
+                    filenames += (str + "|");
+                mTxtImport.Text = filenames.Substring(0, filenames.Length - 1);
+
+                _ImportData(filenames);
+            };
+        }
+        void mBtnPreview_Click(object sender, EventArgs e)
+        {
+            if (mLvImportData.Items.Count == 0)
+            {
+                MessageBox.Show("There are nothing to preview!", Application.ProductName,
+                    MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                return;
+            }
+
+            mLvPreview.Items.Clear();
+            mLblPreview.Visible = false;
+
+            for (int i = 0; i < mLvImportData.Items.Count; i++)
+            {
+                try
+                {
+
+
+                    ListViewItem lvItem = new ListViewItem((i + 1).ToString());
+                    //
+                    // Name formatting
+                    //
+                    string _name = mTxtNameFormat.Text;
+                    while (_name.IndexOf("$R[") != -1)
+                    {
+                        int _iFt = _name.IndexOf("$R[");
+                        int _iFtE = _name.IndexOf("]");
+                        if (_iFt != -1 && _iFtE != -1)
+                        {
+                            string _rowTxt = _name.Substring(_iFt, (_iFtE - _iFt) + 1);
+                            int _nRow = int.Parse(_rowTxt.Substring(3, _rowTxt.Length - 4).Trim());
+
+                            _name = _name.Replace(_rowTxt, mLvImportData.Items[i].SubItems[_nRow].Text);
+                        }
+                    }
+
+                    while (_name.IndexOf("$C") != -1)
+                        _name = _name.Replace("$C", (i + 1).ToString());
+
+                    lvItem.SubItems.Add(_name);
+                    //
+                    // Number formatting
+                    //
+                    string _number = mTxtPreFix.Text +
+                        mLvImportData.Items[i].SubItems[(int)mNumRow.Value - 1].Text;
+
+                    if (mTxtReplaceFrom.Text.Length != 0)
+                        _number = Regex.Replace(_number, mTxtReplaceFrom.Text, mTxtReplaceTo.Text);
+                    lvItem.SubItems.Add(_number);
+                    //
+                    // Remove Duplicates
+                    //
+                    bool bCanAdd = true;
+                    if (mChkRemDup.Checked)
+                    {
+                        foreach (ListViewItem lItem in mLvPreview.Items)
+                        {
+                            if (lItem.SubItems[2].Text == _number)
+                            {
+                                bCanAdd = false;
+                                break;
+                            }
+                        }
+                    }
+                    //
+                    // Final appending node.
+                    //
+                    if(bCanAdd)
+                        mLvPreview.Items.Add(lvItem);
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Process stop", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                    return;
+                }
+            }
+        }
+
+        void mBtnExport_Click(object sender, EventArgs e)
+        {
+            using(SaveFileDialog dlg = new SaveFileDialog())
+            {
+                dlg.Filter = "VCF (Virtual Contact File)(*.vcf)|*.vcf";
+                dlg.FileName = (DateTime.Now.ToShortDateString() + "-" + DateTime.Now.ToLongTimeString() + ".vcf");
+
+                if (dlg.ShowDialog() != DialogResult.OK)
+                    return;
+
+                string _theVCF = "";
+                foreach (ListViewItem lvItem in mLvPreview.Items)
+                {
+                    _theVCF += string.Format(
+                        (
+                        "BEGIN:VCARD\r\n" +
+                        "VERSION:3.0\r\n" +
+                        "N:{0};;;\r\n" +
+                        "FN:{0}\r\n" +
+                        "TEL;TYPE=CELL:{1}\r\n" +
+                        "END:VCARD\r\n"
+                        ),
+                        //
+                        lvItem.SubItems[1].Text, lvItem.SubItems[2].Text);
+                }
+                //
+                // Writing data
+                //
+                try
+                {
+                    File.WriteAllText(dlg.FileName, _theVCF, Encoding.UTF8);
+                    MessageBox.Show("Process completed and successfully exported.", "Success",
+                        MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "File error", 
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            };
+        }
+    }
+}

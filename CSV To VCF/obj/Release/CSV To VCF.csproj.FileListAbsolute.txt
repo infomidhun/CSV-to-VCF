@@ -1,0 +1,8 @@
+F:\PROJECTS\C#\CSV To VCF\CSV To VCF\bin\Release\CSV To VCF.exe.config
+F:\PROJECTS\C#\CSV To VCF\CSV To VCF\bin\Release\CSV To VCF.exe
+F:\PROJECTS\C#\CSV To VCF\CSV To VCF\bin\Release\CSV To VCF.pdb
+F:\PROJECTS\C#\CSV To VCF\CSV To VCF\obj\Release\CSV_To_VCF.CMainDlg.resources
+F:\PROJECTS\C#\CSV To VCF\CSV To VCF\obj\Release\CSV_To_VCF.Properties.Resources.resources
+F:\PROJECTS\C#\CSV To VCF\CSV To VCF\obj\Release\CSV To VCF.csproj.GenerateResource.Cache
+F:\PROJECTS\C#\CSV To VCF\CSV To VCF\obj\Release\CSV To VCF.exe
+F:\PROJECTS\C#\CSV To VCF\CSV To VCF\obj\Release\CSV To VCF.pdb

@@ -48,18 +48,24 @@
             this.mLvImportData = new System.Windows.Forms.ListView();
             this.mBtnPreview = new System.Windows.Forms.Button();
             this.mLvPreview = new System.Windows.Forms.ListView();
-            this.mBtnExport = new System.Windows.Forms.Button();
-            this.mLblPreview = new System.Windows.Forms.Label();
-            this.mLblImportData = new System.Windows.Forms.Label();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.mBtnExport = new System.Windows.Forms.Button();
+            this.mLblPreview = new System.Windows.Forms.Label();
+            this.mLblImportData = new System.Windows.Forms.Label();
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.mCompanyRow = new System.Windows.Forms.NumericUpDown();
+            this.label9 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mNumRow)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mCompanyRow)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label9);
+            this.groupBox1.Controls.Add(this.mCompanyRow);
             this.groupBox1.Controls.Add(this.mChkRemDup);
             this.groupBox1.Controls.Add(this.label8);
             this.groupBox1.Controls.Add(this.label7);
@@ -198,9 +204,9 @@
             this.label2.Font = new System.Drawing.Font("Tahoma", 6.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(16, 67);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(81, 11);
+            this.label2.Size = new System.Drawing.Size(39, 11);
             this.label2.TabIndex = 7;
-            this.label2.Text = "NUMBERS ROW";
+            this.label2.Text = "N ROW";
             // 
             // mNumRow
             // 
@@ -216,7 +222,7 @@
             0,
             0});
             this.mNumRow.Name = "mNumRow";
-            this.mNumRow.Size = new System.Drawing.Size(87, 22);
+            this.mNumRow.Size = new System.Drawing.Size(40, 22);
             this.mNumRow.TabIndex = 6;
             this.mNumRow.Value = new decimal(new int[] {
             1,
@@ -256,6 +262,7 @@
             // 
             // mLvImportData
             // 
+            this.mLvImportData.AllowDrop = true;
             this.mLvImportData.FullRowSelect = true;
             this.mLvImportData.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.mLvImportData.Location = new System.Drawing.Point(12, 12);
@@ -264,6 +271,9 @@
             this.mLvImportData.TabIndex = 1;
             this.mLvImportData.UseCompatibleStateImageBehavior = false;
             this.mLvImportData.View = System.Windows.Forms.View.Details;
+            this.mLvImportData.DragDrop += new System.Windows.Forms.DragEventHandler(this.mLvImportData_DragDrop);
+            this.mLvImportData.DragEnter += new System.Windows.Forms.DragEventHandler(this.mLvImportData_DragEnter);
+            this.mLvImportData.KeyDown += new System.Windows.Forms.KeyEventHandler(this.mLvImportData_KeyDown);
             // 
             // mBtnPreview
             // 
@@ -281,7 +291,8 @@
             this.mLvPreview.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
-            this.columnHeader3});
+            this.columnHeader3,
+            this.columnHeader4});
             this.mLvPreview.FullRowSelect = true;
             this.mLvPreview.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.mLvPreview.Location = new System.Drawing.Point(413, 12);
@@ -290,6 +301,22 @@
             this.mLvPreview.TabIndex = 6;
             this.mLvPreview.UseCompatibleStateImageBehavior = false;
             this.mLvPreview.View = System.Windows.Forms.View.Details;
+            this.mLvPreview.KeyDown += new System.Windows.Forms.KeyEventHandler(this.mLvPreview_KeyDown);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "#";
+            this.columnHeader1.Width = 32;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "Name";
+            this.columnHeader2.Width = 72;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "Number";
+            this.columnHeader3.Width = 108;
             // 
             // mBtnExport
             // 
@@ -326,20 +353,42 @@
             this.mLblImportData.TabIndex = 21;
             this.mLblImportData.Text = "IMPORT DATA";
             // 
-            // columnHeader1
+            // columnHeader4
             // 
-            this.columnHeader1.Text = "#";
-            this.columnHeader1.Width = 38;
+            this.columnHeader4.Text = "Company";
+            this.columnHeader4.Width = 160;
             // 
-            // columnHeader2
+            // mCompanyRow
             // 
-            this.columnHeader2.Text = "Name";
-            this.columnHeader2.Width = 208;
+            this.mCompanyRow.Location = new System.Drawing.Point(65, 84);
+            this.mCompanyRow.Maximum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.mCompanyRow.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.mCompanyRow.Name = "mCompanyRow";
+            this.mCompanyRow.Size = new System.Drawing.Size(40, 22);
+            this.mCompanyRow.TabIndex = 20;
+            this.mCompanyRow.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
             // 
-            // columnHeader3
+            // label9
             // 
-            this.columnHeader3.Text = "Number";
-            this.columnHeader3.Width = 123;
+            this.label9.AutoSize = true;
+            this.label9.Font = new System.Drawing.Font("Tahoma", 6.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label9.Location = new System.Drawing.Point(64, 67);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(39, 11);
+            this.label9.TabIndex = 21;
+            this.label9.Text = "C ROW";
             // 
             // CMainDlg
             // 
@@ -362,6 +411,7 @@
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.mNumRow)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mCompanyRow)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -395,6 +445,9 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.NumericUpDown mCompanyRow;
+        private System.Windows.Forms.Label label9;
     }
 }
 

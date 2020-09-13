@@ -77,7 +77,6 @@ namespace CSV_To_VCF
             }
 
             mNumRow.Maximum = mLvImportData.Columns.Count;
-            mCompanyRow.Maximum = mNumRow.Maximum;
         }
 
         public CMainDlg()
@@ -118,8 +117,6 @@ namespace CSV_To_VCF
                 //
                 // Formatting multiple selection by | seperator.
                 //
-                mNumRow.Maximum = 1;
-                mCompanyRow.Maximum = 1;
                 string filenames = "";
                 foreach (string str in dlg.FileNames)
                     filenames += (str + "|");
@@ -177,7 +174,6 @@ namespace CSV_To_VCF
                     if (mTxtReplaceFrom.Text.Length != 0)
                         _number = Regex.Replace(_number, mTxtReplaceFrom.Text, mTxtReplaceTo.Text);
                     lvItem.SubItems.Add(_number);
-                    lvItem.SubItems.Add(mLvImportData.Items[i].SubItems[(int)mCompanyRow.Value - 1].Text);
                     //
                     // Remove Duplicates
                     //
@@ -227,18 +223,17 @@ namespace CSV_To_VCF
                         "VERSION:3.0\r" +
                         "N:{0};;;\r" +
                         "FN:{0}\r" +
-                        "ORG:{2}\n"+
                         "TEL;TYPE=CELL:{1}\r" +
                         "END:VCARD\r"),
                         //
-                        lvItem.SubItems[1].Text, lvItem.SubItems[2].Text, lvItem.SubItems[3].Text);
+                        lvItem.SubItems[1].Text, lvItem.SubItems[2].Text);
                 }
                 //
                 // Writing data
                 //
                 try
                 {
-                    File.WriteAllText(dlg.FileName, _theVCF);
+                    File.WriteAllText(dlg.FileName, _theVCF, Encoding.UTF8);
                     MessageBox.Show("Process completed and successfully exported.", "Success",
                         MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 }
@@ -262,8 +257,6 @@ namespace CSV_To_VCF
                     MessageBoxButtons.YesNo) == DialogResult.No)
                     return;
             }
-            mNumRow.Maximum = 1;
-            mCompanyRow.Maximum = 1;
             string filenames = "";
             string[] _strs = ((string[])e.Data.GetData(DataFormats.FileDrop, false));
             foreach (string str in _strs)
@@ -278,40 +271,6 @@ namespace CSV_To_VCF
                 e.Effect = DragDropEffects.All;
             else
                 e.Effect = DragDropEffects.None;
-        }
-
-        void mLvImportData_KeyDown(object sender, KeyEventArgs e)
-        {
-            if(e.KeyCode == Keys.Delete)
-            {
-                if (mLvImportData.SelectedItems.Count != 0)
-                {
-                    if (MessageBox.Show("Are you want to delete selected contacts?", "Confirmation",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                        return;
-                    foreach (ListViewItem lvItem in mLvImportData.SelectedItems)
-                        lvItem.Remove();
-                }
-            }
-            
-        }
-
-        void mLvPreview_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Delete)
-            {
-                if (mLvPreview.SelectedItems.Count != 0)
-                {
-                    if (MessageBox.Show("Are you want to delete selected contacts?", "Confirmation",
-                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
-                        return;
-                    foreach (ListViewItem lvItem in mLvPreview.SelectedItems)
-                        lvItem.Remove();
-                    for (int i = 0; i < mLvPreview.Items.Count; i++)
-                        mLvPreview.Items[i].Text = (i + 1).ToString();
-                }
-            }
-
         }
     }
 }
